@@ -94,8 +94,19 @@ test -f ${lock} && {
 #
 echo -e "\n# ${script_nome} (v${script_versao})\n# ${data_iso}\n### Start ###"
 
+#
+#
+#
 echo -e $$"\n"${data_iso} > ${lock}
+
+#
+#
+#
 test -d ${dir_dmps} || mkdir -v ${dir_dmps}
+
+#
+#
+#
 test -d ${dir_mysql} || mkdir -v ${dir_mysql}
 test -d ${dir_virt} || mkdir -v ${dir_virt}
 test -d ${dir_logs} || mkdir -v ${dir_logs}
