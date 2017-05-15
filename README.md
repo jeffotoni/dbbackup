@@ -7,3 +7,19 @@ The email can be sent by mailutils or aws cli, if you installed awscli you can s
 The script also backs up the crontab.
 
 The script was done in linux environment running the Ubuntu distribution, but nothing prevents you from changing according to your need and distribution.
+
+
+
+# running
+
+$ sh dbbackup.sh
+
+# Can be configured by cron to be called from time to time
+
+Script being called in every 12 hours
+
+```sh
+
+* */12 * * *   cd /backup && sh dbbackup.sh >> dbbackup.log
+
+```
