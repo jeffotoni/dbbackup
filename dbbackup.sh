@@ -10,6 +10,21 @@
 #
 #
 #
+TYPE_BK_POSTGRESQL=all
+
+#
+#
+#
+#TYPE_BK_POSTGRESQL=list
+
+#
+#
+#
+POSTGRES_BD_LIST='database1 database2 database3 database4 database5 database6';
+
+#
+#
+#
 script_nome=$(basename $0)
 
 #
@@ -108,11 +123,21 @@ test -d ${dir_dmps} || mkdir -v ${dir_dmps}
 #
 #
 test -d ${dir_mysql} || mkdir -v ${dir_mysql}
+
+#
+#
+#
 test -d ${dir_virt} || mkdir -v ${dir_virt}
+
+#
+#
+#
 test -d ${dir_logs} || mkdir -v ${dir_logs}
 
+#
+#
+#
 chown -Rf postgres. ${dir_dmps} ${dir_logs}
-
 
 #
 # Do for all database
@@ -127,7 +152,6 @@ done
 #
 # Do for some database
 #
-list='database1 database2 database3 database4 database5 database6';
 for bd in $list;
 do
 echo ${bd}
