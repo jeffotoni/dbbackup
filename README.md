@@ -9,6 +9,28 @@ The script also backs up the crontab.
 The script was done in linux environment running the Ubuntu distribution, but nothing prevents you from changing according to your need and distribution.
 
 
+# Setting up some variables
+
+Setting the backup type in postgresql
+
+```sh
+#
+# 
+#
+TYPE_BK_POSTGRESQL=all
+
+#
+#
+#
+#TYPE_BK_POSTGRESQL=list
+
+#
+#
+#
+POSTGRES_BD_LIST='database1 database2 database3 database4 database5 database6';
+
+```
+
 
 # running
 
