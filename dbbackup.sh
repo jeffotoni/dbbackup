@@ -10,12 +10,12 @@
 #
 #
 #
-TYPE_BK_POSTGRESQL=all
+TYPE_BK_POSTGRESQL='ALL'
 
 #
 #
 #
-#TYPE_BK_POSTGRESQL=list
+#TYPE_BK_POSTGRESQL='LIST'
 
 #
 #
@@ -117,41 +117,56 @@ echo -e $$"\n"${data_iso} > ${lock}
 #
 #
 #
-test -d ${dir_dmps} || mkdir -v ${dir_dmps}
+test -d ${dir_dmps} || mkdir -pv ${dir_dmps}
 
 #
 #
 #
-test -d ${dir_mysql} || mkdir -v ${dir_mysql}
+test -d ${dir_mysql} || mkdir -pv ${dir_mysql}
 
 #
 #
 #
-test -d ${dir_virt} || mkdir -v ${dir_virt}
+test -d ${dir_virt} || mkdir -pv ${dir_virt}
 
 #
 #
 #
-test -d ${dir_logs} || mkdir -v ${dir_logs}
+test -d ${dir_logs} || mkdir -pv ${dir_logs}
+
+#
+#
+#
+test -d ${dir_cron} || mkdir -pv ${dir_cron}
 
 #
 #
 #
 chown -Rf postgres. ${dir_dmps} ${dir_logs}
 
+
 #
 # Do for all database
 #
+if [ "$TYPE_BK_POSTGRESQL" = "ALL" ]
+  then
+
 for bd in $(psql -U postgres -Alt | awk 'BEGIN {FS="|"} ! /^postgres|^template/ {print $1}')
 do
   echo -en "\nBase '${bd}'... "
   psql -U postgres -Atc "SELECT pg_size_pretty(pg_database_size(current_database()));"
   pg_dump -Upostgres -Fc -Z9 -b -o ${bd} -f ${dir_dmps}/${bd}.${data_iso_bd}.dmp 2> ${dir_logs}/${bd}.${data_iso_bd}.dmp.log && echo -en "OK" || echo -en "ERRO"
+
+  echo "Copying to aws s3"
+  aws s3 cp ${dir_dmps}/${bd}.${data_iso_bd}.dmp s3://bucket/
 done
+fi
 
 #
 # Do for some database
 #
+if [ "$TYPE_BK_POSTGRESQL" = "LIST" ]
+  then
 for bd in $list;
 do
 echo ${bd}
@@ -161,6 +176,7 @@ echo "Copying to aws s3"
 aws s3 cp ${dir_dmps}/${bd}.${data_iso_bd}.dmp s3://bucket/
 
 done
+fi
 
 echo ""
 echo "${dir_dmps} backup" >> log_backup.log

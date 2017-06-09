@@ -29,6 +29,28 @@ TYPE_BK_POSTGRESQL=all
 #
 POSTGRES_BD_LIST='database1 database2 database3 database4 database5 database6';
 
+#
+# Do for all database
+#
+for bd in $(psql -U postgres -Alt | awk 'BEGIN {FS="|"} ! /^postgres|^template/ {print $1}')
+do
+  echo -en "\nBase '${bd}'... "
+  psql -U postgres -Atc "SELECT pg_size_pretty(pg_database_size(current_database()));"
+  pg_dump -Upostgres -Fc -Z9 -b -o ${bd} -f ${dir_dmps}/${bd}.${data_iso_bd}.dmp 2> ${dir_logs}/${bd}.${data_iso_bd}.dmp.log && echo -en "OK" || echo -en "ERRO"
+done
+
+#
+# Do for some database
+#
+for bd in $list;
+do
+echo ${bd}
+pg_dump -Upostgres -Fc -Z9 -b -o ${bd} -f ${dir_dmps}/${bd}.${data_iso_bd}.dmp 2> ${dir_logs}/${bd}.${data_iso_bd}.dmp.log && echo -en "OK" || echo -en "ERRO"
+
+echo "Copying to aws s3"
+aws s3 cp ${dir_dmps}/${bd}.${data_iso_bd}.dmp s3://bucket/
+done
+
 ```
 
 Setting the backup type in mysql
