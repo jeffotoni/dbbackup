@@ -29,6 +29,12 @@ TYPE_BK_POSTGRESQL=all
 #
 POSTGRES_BD_LIST='database1 database2 database3 database4 database5 database6';
 
+
+#
+#
+#
+AWSCP_S3="no"
+
 #
 # Do for all database
 #
@@ -47,8 +53,12 @@ do
 echo ${bd}
 pg_dump -Upostgres -Fc -Z9 -b -o ${bd} -f ${dir_dmps}/${bd}.${data_iso_bd}.dmp 2> ${dir_logs}/${bd}.${data_iso_bd}.dmp.log && echo -en "OK" || echo -en "ERRO"
 
-echo "Copying to aws s3"
-aws s3 cp ${dir_dmps}/${bd}.${data_iso_bd}.dmp s3://bucket/
+   if [ "$AWSCP_S3" = "yes" ]
+    then
+      echo "Copying to aws s3"
+      aws s3 cp ${dir_dmps}/${bd}.${data_iso_bd}.dmp s3://bucket/
+    fi
+
 done
 
 ```
