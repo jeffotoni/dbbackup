@@ -25,6 +25,11 @@ POSTGRES_BD_LIST='database1 database2 database3 database4 database5 database6';
 #
 #
 #
+AWSCP_S3="no"
+
+#
+#
+#
 script_nome=$(basename $0)
 
 #
@@ -157,8 +162,12 @@ do
   psql -U postgres -Atc "SELECT pg_size_pretty(pg_database_size(current_database()));"
   pg_dump -Upostgres -Fc -Z9 -b -o ${bd} -f ${dir_dmps}/${bd}.${data_iso_bd}.dmp 2> ${dir_logs}/${bd}.${data_iso_bd}.dmp.log && echo -en "OK" || echo -en "ERRO"
 
-  echo "Copying to aws s3"
-  aws s3 cp ${dir_dmps}/${bd}.${data_iso_bd}.dmp s3://bucket/
+  if [ "$AWSCP_S3" = "yes" ]
+    then
+      echo "Copying to aws s3"
+      aws s3 cp ${dir_dmps}/${bd}.${data_iso_bd}.dmp s3://bucket/
+    fi
+
 done
 fi
 
@@ -172,9 +181,11 @@ do
 echo ${bd}
 pg_dump -Upostgres -Fc -Z9 -b -o ${bd} -f ${dir_dmps}/${bd}.${data_iso_bd}.dmp 2> ${dir_logs}/${bd}.${data_iso_bd}.dmp.log && echo -en "OK" || echo -en "ERRO"
 
-echo "Copying to aws s3"
-aws s3 cp ${dir_dmps}/${bd}.${data_iso_bd}.dmp s3://bucket/
-
+if [ "$AWSCP_S3" = "yes" ]
+    then
+      echo "Copying to aws s3"
+      aws s3 cp ${dir_dmps}/${bd}.${data_iso_bd}.dmp s3://bucket/
+    fi
 done
 fi
 
@@ -189,8 +200,11 @@ chown -Rf postgres. ${dir_dmps} ${dir_logs}
 # backup of cron
 crontab -l > ${dir_cron}/crontab.txt
 
-aws s3 cp ${dir_cron}/crontab.txt s3://bucket/crontab.txt
-
+if [ "$AWSCP_S3" = "yes" ]
+    then
+      aws s3 cp ${dir_cron}/crontab.txt s3://bucket/crontab.txt
+    fi
+    
 echo -e "\n### Fim dump ###"
 
 exit 0
